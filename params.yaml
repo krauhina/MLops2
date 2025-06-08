@@ -1,0 +1,15 @@
+clean_params:
+  threshold: 0.8
+  drop_columns: ["id"]   
+
+feature_params:
+  polynomial_degree: 2
+
+train_params:
+  model_type: "RandomForest"
+  n_estimators: 100
+  random_state: 42
+
+eval_params:
+  metrics: ["accuracy", "f1", "precision", "recall"]
+  test_size: 0.2

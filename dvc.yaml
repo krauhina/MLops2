@@ -1,0 +1,41 @@
+stages:
+  clean:
+    cmd: python src/clean_data.py
+    deps:
+      - data/raw/your_data.csv
+      - src/clean_data.py
+    outs:
+      - data/processed/cleaned_data.csv
+    params:
+      - clean_params
+
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+      - data/processed/cleaned_data.csv
+      - src/featurize.py
+    outs:
+      - data/processed/features.csv
+    params:
+      - feature_params
+
+  train:
+    cmd: python src/train_model.py
+    deps:
+      - data/processed/features.csv
+      - src/train_model.py
+    outs:
+      - model/model.pkl
+    params:
+      - train_params
+
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+      - model/model.pkl
+      - data/processed/features.csv
+      - src/evaluate.py
+    outs:
+      - metrics.json
+    params:
+      - eval_params

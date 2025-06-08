@@ -1,0 +1,95 @@
+schema: '2.0'
+stages:
+  clean:
+    cmd: python src/clean_data.py
+    deps:
+    - path: data/raw/your_data.csv
+      hash: md5
+      md5: 17a6c1116f731fb09aef495c1d526f08
+      size: 2138
+    - path: src/clean_data.py
+      hash: md5
+      md5: 913a6e19f1e7ae2b8ec9a453f72dabc2
+      size: 728
+    params:
+      params.yaml:
+        clean_params:
+          threshold: 0.8
+          drop_columns:
+          - id
+    outs:
+    - path: data/processed/cleaned_data.csv
+      hash: md5
+      md5: 8d01dc5916c3b81d16282d348a3ebc8a
+      size: 1944
+  featurize:
+    cmd: python src/featurize.py
+    deps:
+    - path: data/processed/cleaned_data.csv
+      hash: md5
+      md5: 8d01dc5916c3b81d16282d348a3ebc8a
+      size: 1944
+    - path: src/featurize.py
+      hash: md5
+      md5: 0426080ba2d40039141bb85d3655add7
+      size: 1032
+    params:
+      params.yaml:
+        feature_params:
+          polynomial_degree: 2
+    outs:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 9c62b8bf199983c1d726ebdc33762d88
+      size: 12760
+  train:
+    cmd: python src/train_model.py
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 9c62b8bf199983c1d726ebdc33762d88
+      size: 12760
+    - path: src/train_model.py
+      hash: md5
+      md5: 68085520150253543b07aaa48eb5860a
+      size: 921
+    params:
+      params.yaml:
+        train_params:
+          model_type: RandomForest
+          n_estimators: 100
+          random_state: 42
+    outs:
+    - path: model/model.pkl
+      hash: md5
+      md5: 77530519f381a9f7d9c05e5a744219ae
+      size: 217897
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/processed/features.csv
+      hash: md5
+      md5: 9c62b8bf199983c1d726ebdc33762d88
+      size: 12760
+    - path: model/model.pkl
+      hash: md5
+      md5: 77530519f381a9f7d9c05e5a744219ae
+      size: 217897
+    - path: src/evaluate.py
+      hash: md5
+      md5: 706dc4fd18efe2cbbc225cdbc2d5544d
+      size: 1389
+    params:
+      params.yaml:
+        eval_params:
+          metrics:
+          - accuracy
+          - f1
+          - precision
+          - recall
+          test_size: 0.2
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 42beb9e803ab01aee1245af4778280fb
+      size: 76
